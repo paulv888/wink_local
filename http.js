@@ -77,6 +77,8 @@ function _read_devices(reReadAll) {
 		var prevDev = -1;
 		var attributes =  { };
 		var devToUpdate = { };
+		console.error("api prev -1 arrayLength:", arrayLength);
+		if (arrayLength < 2) return;				// Something went wrong (Getting Dev -1)
 		for (var i = 0; i < arrayLength-1; i++) {
 			var attrToUpdate = { };
 			var line = lines[i];
@@ -103,7 +105,7 @@ function _read_devices(reReadAll) {
 			}
 
 			devToUpdate.unit	    = parts[0];
-			prevDev 		    		= parts[0];
+			prevDev 		   = parts[0];
 			devToUpdate.interConnect    = parts[1];
 			devToUpdate.userName        = parts[2];
 			devToUpdate.basicType       = parts[3];
@@ -111,8 +113,13 @@ function _read_devices(reReadAll) {
 			devToUpdate.specType        = parts[5];
 			devToUpdate.productType     = parts[6];
 			attrToUpdate.attributeID    = parts[7];
+			if (parts[8]=="Lock_Unlock") parts[8]="Locked";
 			attrToUpdate.attributeName  = parts[8];
+			if (parts[9]=="TRUE") parts[9]="1";
+			if (parts[9]=="FALSE") parts[9]="0";
 			attrToUpdate.value_get      = parts[9];
+			if (parts[10]=="TRUE") parts[10]="1";
+			if (parts[10]=="FALSE") parts[10]="0";
 			attrToUpdate.value_set      = parts[10];
 			attributes[attrToUpdate.attributeID] = attrToUpdate;
 		};
@@ -207,11 +214,11 @@ function prepDevice(device) {
 	{
 	case "64":
 		if (device['attributes'][10]['value_get'] != device['attributes'][10]['value_set']) {
-			 retDevice['Status'] = defines.STATUS_UNKNOWN;
+			 retDevice['Locked'] = defines.STATUS_UNKNOWN;
 		} else if (device['attributes'][10]['value_get'] == "TRUE") {
-			 retDevice['Status'] = defines.STATUS_ON;
+			 retDevice['Locked'] = defines.STATUS_ON;
 		} else {
-			 retDevice['Status'] = defines.STATUS_OFF;
+			 retDevice['Locked'] = defines.STATUS_OFF;
 		}
 		retDevice['Command'] = defines.COMMAND_SET_RESULT;
 		break;

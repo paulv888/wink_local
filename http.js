@@ -113,7 +113,7 @@ function _read_devices(reReadAll) {
 			devToUpdate.specType        = parts[5];
 			devToUpdate.productType     = parts[6];
 			attrToUpdate.attributeID    = parts[7];
-			if (parts[8]=="Lock_Unlock") parts[8]="Locked";
+			if (parts[8]=="Lock_Unlock") parts[8]="Locked"; 
 			attrToUpdate.attributeName  = parts[8];
 			if (parts[9]=="TRUE") parts[9]="1";
 			if (parts[9]=="FALSE") parts[9]="0";

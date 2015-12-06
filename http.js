@@ -113,7 +113,7 @@ function _read_devices(reReadAll) {
 			devToUpdate.specType        = parts[5];
 			devToUpdate.productType     = parts[6];
 			attrToUpdate.attributeID    = parts[7];
-			if (parts[8]=="Lock_Unlock") parts[8]="Locked"; 
+			if (parts[8]=="Lock_Unlock") parts[8]="Locked";
 			attrToUpdate.attributeName  = parts[8];
 			if (parts[9]=="TRUE") parts[9]="1";
 			if (parts[9]=="FALSE") parts[9]="0";
@@ -157,14 +157,19 @@ Api.prototype.update = cadence (function (async, request) {
 				cmd = 'set_rgb 0 0 0';
 			}
      		} else {
-			var value = (command.commandid == defines.COMMAND_ON ? "TRUE" : "FALSE");
 			switch (devices[command.unit].genericType)
 			{
 			case "64":	// lock
+				var value = (command.commandid == defines.COMMAND_ON ? "TRUE" : "FALSE");
 				attributeID = 10;
 				break;
 			case "17":	// Generic zwave Light
+				var value = (command.commandid == defines.COMMAND_ON ? "TRUE" : "FALSE");
 				attributeID = 4;
+				break;
+			case "16":	// Generic zwave switch *Siren
+				var value = (command.commandid == defines.COMMAND_ON ? 255 : 0);
+				attributeID = 1;
 				break;
 			}			
 			cmd = 'aprontest -u -m' + command.unit + ' -t' + attributeID + ' -v' + value;
@@ -232,6 +237,16 @@ function prepDevice(device) {
 		}
 		retDevice['Command'] = defines.COMMAND_SET_RESULT;
 		break;
+	case "16":
+		if (device['attributes'][1]['value_get'] != device['attributes'][1]['value_set']) {
+			 retDevice['Status'] = defines.STATUS_UNKNOWN;
+		} else if (device['attributes'][1]['value_get'] > 0) {
+			 retDevice['Status'] = defines.STATUS_ON;
+		} else {
+			 retDevice['Status'] = defines.STATUS_OFF;
+		}
+		retDevice['Command'] = defines.COMMAND_SET_RESULT;
+		break;
 	}
 //	console.error ("api prep device", retDevice);
 	return retDevice;
@@ -279,7 +294,7 @@ function execute(command){
 function executeWcb(command, callback){
 	exec(command, function(error, stdout, stderr) {
 	if(error !== null) {
-		//console.error ("api execute", stderr)
+		console.error ("api execute", stderr)
 		callback(JSON.stringify(error)); 
 		return
     	}

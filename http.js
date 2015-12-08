@@ -220,7 +220,7 @@ function prepDevice(device) {
 	case "64":
 		if (device['attributes'][10]['value_get'] != device['attributes'][10]['value_set']) {
 			 retDevice['Locked'] = defines.STATUS_UNKNOWN;
-		} else if (device['attributes'][10]['value_get'] == "TRUE") {
+		} else if (device['attributes'][10]['value_get'] > 0) {
 			 retDevice['Locked'] = defines.STATUS_ON;
 		} else {
 			 retDevice['Locked'] = defines.STATUS_OFF;

@@ -53,7 +53,7 @@ function _read_devices(reReadAll) {
 
 	if (reReadAll) devices = { };
 
-	var cmd = 'sqlite3 /database/apron.db "SELECT m.deviceID, m.interconnect, m.userName, d.basicType, \
+	var cmd = 'sqlite3 /database/apron.db -init /database/init.sql "SELECT m.deviceID, m.interconnect, m.userName, d.basicType, \
                    d.genericType, d.specType, d.productType, \
                    a.attributeId, a.description as attributeName, s.value_get, s.value_set FROM zwaveDeviceState AS s \
                    LEFT JOIN zwaveAttribute AS a ON s.attributeId = a.attributeID \
@@ -77,7 +77,7 @@ function _read_devices(reReadAll) {
 		var prevDev = -1;
 		var attributes =  { };
 		var devToUpdate = { };
-		console.error("api prev -1 arrayLength:", arrayLength);
+		//console.error("api prev -1 arrayLength:", arrayLength);
 		if (arrayLength < 2) return;				// Something went wrong (Getting Dev -1)
 		for (var i = 0; i < arrayLength-1; i++) {
 			var attrToUpdate = { };

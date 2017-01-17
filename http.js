@@ -178,12 +178,10 @@ Api.prototype.update = cadence (function (async, request) {
 	case defines.COMMAND_SET_VALUE:
 		if (command.unit == "999") {
      		// Led Handling
-			switch (command.commandvalue)
-			{
-			case "1":
-				cmd = 'set_rgb 255 0 0 0 0 0 flash 500000';
-				break;
-			}	
+			var rgb = command.commandvalue.split(",");
+  	logger.info('api update',rgb);
+
+			cmd = 'set_rgb ' + rgb[0] + ' ' + rgb[1] + ' ' + rgb[2] + ' 0 0 0 flash ' + rgb[3]*1000;
  	 	} else {
 			var value = command.commandvalue;
 			switch (devices[command.unit].genericType)

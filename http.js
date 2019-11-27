@@ -26,6 +26,7 @@ function Api() {
 
 Api.prototype.reportStatus = function () {
     logger.info('reportStatus', {event : 'running' }) 
+    /*_refresh_devices();*/
     _read_devices(false);
 }
 
@@ -48,6 +49,35 @@ Api.prototype.read_devices = cadence(function (async, request) {
 	_read_devices(false)
         return { message : "ok", errors : [], pagination : [] }
 })
+
+/*
+function _refresh_devices() {
+
+
+	var cmd = 'sqlite3 /database/apron.db -init /database/init.sql "SELECT m.deviceID FROM masterDevice as m where m.active='+"'"+'TRUE'+"'"+';"';
+*/
+/*
+ 1\n
+ 4\n
+*/
+/*
+        executeWcb(cmd, function (out) {
+		var lines = out.split('\n');
+		var arrayLength = lines.length;
+		//console.error("api prev -1 arrayLength:", arrayLength);
+		if (arrayLength < 2) return;				// Something went wrong (Getting Dev -1)
+
+		for (var i = 0; i < arrayLength-1; i++) {
+			cmd = 'aprontest -e -m' + lines[i];
+			execute(cmd); 
+			logger.info("Force refresh on device:", lines[i]);
+		}
+
+	})
+
+}
+*/
+
 
 function _read_devices(reReadAll) {
 
@@ -217,7 +247,10 @@ function prepDevice(device) {
 	{
 	case "64":
 		if (device['attributes'][10]['value_get'] != device['attributes'][10]['value_set']) {
-			 retDevice['Locked'] = defines.STATUS_UNKNOWN;
+			retDevice['Locked'] = defines.STATUS_UNKNOWN;
+			cmd = 'aprontest -e -m' + device.unit;
+			logger.info("Force refresh on device:", device.unit);
+			execute(cmd); 
 		} else if (device['attributes'][10]['value_get'] > 0) {
 			 retDevice['Locked'] = defines.STATUS_ON;
 		} else {
@@ -227,7 +260,10 @@ function prepDevice(device) {
 		break;
 	case "17":
 		if (device['attributes'][3]['value_get'] != device['attributes'][3]['value_set']) {
-			 retDevice['Status'] = defines.STATUS_UNKNOWN;
+			retDevice['Status'] = defines.STATUS_UNKNOWN;
+			cmd = 'aprontest -e -m' + device.unit;
+			execute(cmd); 
+			logger.info("Force refresh on device:", device.unit);
 		} else if (device['attributes'][3]['value_get'] > 0) {
 			 retDevice['Status'] = defines.STATUS_ON;
 		} else {
@@ -237,7 +273,10 @@ function prepDevice(device) {
 		break;
 	case "16":
 		if (device['attributes'][1]['value_get'] != device['attributes'][1]['value_set']) {
-			 retDevice['Status'] = defines.STATUS_UNKNOWN;
+			retDevice['Status'] = defines.STATUS_UNKNOWN;
+			cmd = 'aprontest -e -m' + device.unit;
+			logger.info("Force refresh on device:", device.unit);
+			execute(cmd); 
 		} else if (device['attributes'][1]['value_get'] > 0) {
 			 retDevice['Status'] = defines.STATUS_ON;
 		} else {
@@ -257,7 +296,7 @@ function postDevice(device) {
 
   // An object of options to indicate where to post to
   var post_options = {
-      host: '192.168.2.101',
+      host: '192.168.2.11',
       port: '80',
       path: '/wink.php',
       method: 'POST',
